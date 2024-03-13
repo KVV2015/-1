@@ -322,15 +322,15 @@ Switch#
 
 - В режиме глобальной конфигурации скопируем следующие базовые параметры конфигурации и вставьте их в файл на коммутаторе S1:
 
-  no ip domain-lookup
+   - no ip domain-lookup
 
-  hostname S1
+   - hostname S1
 
-  service password-encryption
+   - service password-encryption
 
-  enable secret class
+   - enable secret class
 
-  banner motd @ Unauthorized access is strictly prohibited. @
+   - banner motd @ Unauthorized access is strictly prohibited. @
 
 ```
 Switch(config)#no ip domain-lookup
@@ -416,7 +416,164 @@ S1(config-line)# logging synchronous
 
 1. Перейдите в меню **IP configuration**
 2. Введите в поле строки **IPv4 Address** числовое значение адреса 192.168.1.2
-3.  Введите в поле строки **Subnet mask** значения маски подсити 255.255.255.0
+3. Введите в поле строки **Subnet mask** значения маски подсити 255.255.255.0
 4. Закройте меню **IP configuration**
 
+## Часть 3. Проверка сетевых подключений
 
+В третьей части нам предстоит проверить и задокументировать конфигурацию коммутатора, протестировать сквозное соединение между компьютером PC-A и коммутатором S1, а также протестировать возможность удаленного управления коммутатором. 
+
+### Шаг 1. Отображение конфигурации коммутатора.
+
+Проверим конфигурацию нашего коммутатора введя команду **show run** из привелигированного режима:
+
+``` 
+S1#
+S1#show run
+Building configuration...
+
+Current configuration : 1317 bytes
+!
+version 15.0
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname S1
+!
+enable secret 5 $1$mERr$9cTjUIEqNGurQiFU.ZeCi1
+!
+!
+!
+no ip domain-lookup
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 192.168.1.1 255.255.255.0
+!
+banner motd ^C Unauthorized access is strictly prohibited. ^C
+!
+!
+!
+line con 0
+ password 7 0822455D0A16
+ logging synchronous
+ login
+!
+line vty 0 4
+ password 7 0822404F1A0A
+ login
+ transport input telnet
+line vty 5 15
+ login
+!
+!
+!
+!
+end
+
+
+S1#
+```
+
+
+
+### Шаг 2. Проверка удаленного управления коммутатором S1.
+
+Для этого используем удаленный доступ к устройству с помощью Telnet. 
+
+- Открываем Tera term 
+- Выбираем сервер Telnet и указываем адрес управления SVI для подключения к S1. 
+- Вводим пароль
+- Входим в привелигированный режим 
+- Вводим пароль
+- Сохраняем конфигурацию командой **Copy run start**
+- Завершаем сеанс командой **Exit**
+
+``` 
+Trying 192.168.1.1 ...Open Unauthorized access is strictly prohibited. 
+
+
+User Access Verification
+
+Password: 
+S1>
+S1>
+S1>en
+S1>enable 
+Password: 
+S1#
+S1#
+S1#copy run start
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+S1#
+S1#exit
+
+
+Trying 192.168.1.1 ...Open Unauthorized access is strictly prohibited. 
+
+
+User Access Verification
+
+Password: 
+```
+
+На этом настройка завершена
