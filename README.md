@@ -314,5 +314,109 @@ Switch#
 Мы видим, что интерфейс включен, его скорость составляет 100 Мб/с, MAC адрес bia 0001.9763.0806. Настройки дуплекса DLY 1000 usec.
 
 
+## Часть 2. Настройка базовых параметров сетевых устройств
+
+Во второй части настроим основные параметры коммутатора и компьютера.
+
+### Шаг 1. Настраиваем базовые параметры коммутатора
+
+- В режиме глобальной конфигурации скопируем следующие базовые параметры конфигурации и вставьте их в файл на коммутаторе S1:
+
+  no ip domain-lookup
+
+  hostname S1
+
+  service password-encryption
+
+  enable secret class
+
+  banner motd @ Unauthorized access is strictly prohibited. @
+
+```
+Switch(config)#no ip domain-lookup
+Switch(config)#
+Switch(config)#
+Switch(config)#hostname S1
+S1(config)#
+S1(config)#
+S1(config)#service password-encryption
+S1(config)#
+S1(config)#enable secret class
+S1(config)#
+S1(config)#banner motd # Unauthorized access is strictly prohibited. #
+S1(config)#
+```
+
+- Назначим IP-адрес интерфейсу SVI на коммутаторе. Благодаря этому получим возможность удаленного управления коммутатором:
+
+  Настройка IP адреса коммутатора ведется из глабальной конфигурации коммутатора. Устанавливаем IP адрес и маску подсети, а так же включаем порт.
+ Подключаемся к комутатору с консоли и вводим следующие комманды:
+
+  ``` 
+  S1(config)#interface vlan1
+  S1(config-if)#
+  S1(config-if)#ip addres 192.168.1.1 255.255.255.0
+  S1(config-if)#
+  S1(config-if)#no shut
+  S1(config-if)#no shutdown 
+  
+  S1(config-if)#
+  %LINK-5-CHANGED: Interface Vlan1, changed state to up
+  
+  %LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to up
+  
+  S1(config-if)#
+  ```
+
+- Доступ через порт консоли ограничим с помощью пароля cisco, для этого введем команды **Line console 0** , **password** и **Login** из привелегированного режима:
+
+  ``` 
+  S1(config)#line console 0
+  S1(config-line)#
+  S1(config-line)#pass
+  S1(config-line)#password cisco
+  S1(config-line)#
+  S1(config-line)#login
+  S1(config-line)#
+  ```
+
+​    Чтобы консольные сообщения не прерывали выполнение команд, используйте параметр **logging    synchronous** из режима глобальных настроек
+
+``` 
+S1(config)# line con 0
+S1(config-line)# logging synchronous 
+```
+
+- Настроим каналы виртуального соединения для удаленного управления (vty), чтобы коммутатор разрешил доступ через Telnet. Для этого зададим зададим пароль для канала VTY, чтобы подключится к коммутатору по протоколу Telnet 
+
+  Для этого из режима глобальных настроек войдем в порт 0-4, затем настроим пароль class и разрешим портам подключение к ним по протоколу Telnet
+
+  ``` 
+  S1(config)#line vty 0 4
+  S1(config-line)#
+  S1(config-line)#pass
+  S1(config-line)#password class
+  S1(config-line)#
+  S1(config-line)#login
+  S1(config-line)#
+  S1(config-line)#trans
+  S1(config-line)#transport inp
+  S1(config-line)#transport input tel
+  S1(config-line)#transport input telnet 
+  S1(config-line)#
+  ```
+
+  Команда login необходима для включения пароля.
+
+  
+
+### Шаг 2. Настройка IP-адреса компьютера PC-A.
+
+Назначаем компьютеру IP адрес и маску подсети в соответствии с таблицей адресации
+
+1. Перейдите в меню **IP configuration**
+2. Введите в поле строки **IPv4 Address** числовое значение адреса 192.168.1.2
+3.  Введите в поле строки **Subnet mask** значения маски подсити 255.255.255.0
+4. Закройте меню **IP configuration**
 
 
