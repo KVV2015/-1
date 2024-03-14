@@ -35,7 +35,7 @@
    
    #### Топологическая схема. Рисунок 1.
   
-   ![image](https://github.com/KVV2015/-1/assets/162564909/fac5f4e8-f5a4-4acb-8140-b16822db5a0e)
+[![image.png](https://i.postimg.cc/ZnrFMw2b/image.png)](https://postimg.cc/V0kCSWzp)
    
 
    #### Шаг1.Создаем сеть согласно топологии.
