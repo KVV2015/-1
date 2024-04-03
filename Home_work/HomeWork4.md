@@ -423,17 +423,17 @@ S1#
 
 #### **Шаг 4. Назначаем компьютерам статические IPv6-адреса.**
 
-a. Откроем окно Свойства Ethernet и назначим адресацию IPv6 для ПК PC-A:
+a. Откроем окно Свойства Ethernet и назначим адресацию IPv6 для ПК PC-A. Локальный адрес хоста должен входить в группу маршрутизации __FF02::2__, поэтому его значение должно отличатся от значение локального адреса шлюза __FE80::2__:
 
-[![PC-A.png](https://i.postimg.cc/28vjk6cs/PC-A.png)](https://postimg.cc/YhrB8pwR)
+[![2024-04-03-16-52-34.png](https://i.postimg.cc/kXQKBpCN/2024-04-03-16-52-34.png)](https://postimg.cc/dL0LfnLD)
 
-[![PC-B.png](https://i.postimg.cc/C1ND67D4/PC-B.png)](https://postimg.cc/hzXfX92J)
+[![2024-04-03-17-10-44.png](https://i.postimg.cc/qqJq3Gym/2024-04-03-17-10-44.png)](https://postimg.cc/XGPnMd2F)
 
-Откроем окно Свойства Ethernet и назначим адресацию IPv6 для ПК PC-B:
+Откроем окно Свойства Ethernet и назначим адресацию IPv6 для ПК PC-B. Локальный адрес хоста должен входить в группу маршрутизации __FF02::2__, поэтому его значение должно отличатся от значение локального адреса шлюза __FE80::2__:
 
-[![2024-04-02-16-00-26.png](https://i.postimg.cc/k5hZkNmW/2024-04-02-16-00-26.png)](https://postimg.cc/06DcSwrN)
+[![2024-04-03-16-53-22.png](https://i.postimg.cc/XNyw0vDz/2024-04-03-16-53-22.png)](https://postimg.cc/bdpGxqPx)
 
-[![2024-04-02-16-00-42.png](https://i.postimg.cc/PJZ5Lr4F/2024-04-02-16-00-42.png)](https://postimg.cc/JHrLv8Sb)
+[![2024-04-03-17-11-35.png](https://i.postimg.cc/C5rhfpF1/2024-04-03-17-11-35.png)](https://postimg.cc/kR83kZR3)
 
 b.	Проверим, что оба компьютера имеют правильную информацию адреса IPv6. Каждый компьютер должен иметь два глобальных адреса IPv6: один статический и один SLACC
 
@@ -445,12 +445,13 @@ C:\>ipconfig
 FastEthernet0 Connection:(default port)
 
    Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::2D0:FFFF:FE01:B1BB
+   Link-local IPv6 Address.........: FE80::2
    IPv6 Address....................: 2001:DB8:ACAD:1::3
    IPv4 Address....................: 0.0.0.0
    Subnet Mask.....................: 0.0.0.0
    Default Gateway.................: FE80::1
                                      0.0.0.0
+
 
 ```
 
@@ -462,14 +463,13 @@ C:\>ipconfig
 FastEthernet0 Connection:(default port)
 
    Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::2D0:FFFF:FE01:B1BB
-   IPv6 Address....................: 2001:DB8:ACAD:A:2D0:FFFF:FE01:B1BB
+   Link-local IPv6 Address.........: FE80::2
+   IPv6 Address....................: 2001:DB8:ACAD:1::2
    IPv4 Address....................: 0.0.0.0
    Subnet Mask.....................: 0.0.0.0
    Default Gateway.................: FE80::1
                                      0.0.0.0
 
-Bluetooth Connection:
 ```
 PC-B в статике:
 
@@ -479,14 +479,13 @@ C:\>ipconfig
 FastEthernet0 Connection:(default port)
 
    Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::2E0:F9FF:FE4D:298C
+   Link-local IPv6 Address.........: FE80::2
    IPv6 Address....................: 2001:DB8:ACAD:A::3
    IPv4 Address....................: 0.0.0.0
    Subnet Mask.....................: 0.0.0.0
    Default Gateway.................: FE80::1
                                      0.0.0.0
 
-Bluetooth Connection:
 ```
 PC-B в динамике:
 
@@ -496,14 +495,13 @@ C:\>ipconfig
 FastEthernet0 Connection:(default port)
 
    Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::2E0:F9FF:FE4D:298C
-   IPv6 Address....................: 2001:DB8:ACAD:1:2E0:F9FF:FE4D:298C
+   Link-local IPv6 Address.........: FE80::2
+   IPv6 Address....................: 2001:DB8:ACAD:A::2
    IPv4 Address....................: 0.0.0.0
    Subnet Mask.....................: 0.0.0.0
    Default Gateway.................: FE80::1
                                      0.0.0.0
 
-Bluetooth Connection:
 ```
 
 ### **Часть 3. Проверка сквозного соединения**
@@ -549,30 +547,33 @@ C:\>
 - Введем команду __tracert__ на PC-A, чтобы проверить наличие сквозного подключения к PC-B.
 
 ```
-C:\>tracert
-Cisco Packet Tracer PC Tracert
+C:\>tracert 2001:DB8:ACAD:a::3
 
-Usage: tracert target
+Tracing route to 2001:DB8:ACAD:a::3 over a maximum of 30 hops: 
+
+  1   0 ms      0 ms      0 ms      2001:DB8:ACAD:1::1
+  2   0 ms      0 ms      0 ms      2001:DB8:ACAD:A::3
+
+Trace complete.
 
 C:\>
 ```
 - С PC-B отправим эхо-запрос на PC-A.
 
 ```
-:\>
-C:\>ping 2001:DB8:ACAD:A::2E
+C:\>ping 2001:db8:acad:1::3
 
-Pinging 2001:DB8:ACAD:A::2E with 32 bytes of data:
+Pinging 2001:db8:acad:1::3 with 32 bytes of data:
 
-Reply from 2001:DB8:ACAD:A::2E: bytes=32 time<1ms TTL=127
-Reply from 2001:DB8:ACAD:A::2E: bytes=32 time<1ms TTL=127
-Reply from 2001:DB8:ACAD:A::2E: bytes=32 time<1ms TTL=127
-Reply from 2001:DB8:ACAD:A::2E: bytes=32 time<1ms TTL=127
+Reply from 2001:DB8:ACAD:1::3: bytes=32 time<1ms TTL=127
+Reply from 2001:DB8:ACAD:1::3: bytes=32 time=1ms TTL=127
+Reply from 2001:DB8:ACAD:1::3: bytes=32 time<1ms TTL=127
+Reply from 2001:DB8:ACAD:1::3: bytes=32 time<1ms TTL=127
 
-Ping statistics for 2001:DB8:ACAD:A::2E:
+Ping statistics for 2001:DB8:ACAD:1::3:
     Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
 Approximate round trip times in milli-seconds:
-    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+    Minimum = 0ms, Maximum = 1ms, Average = 0ms
 
 C:\>
 ```
